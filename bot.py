@@ -173,8 +173,7 @@ async def cb_assess_section(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await q.edit_message_text("يرجى التسجيل /start"); return
     sec_id = int(q.data.split("_")[1])
     section = db.get_section(sec_id)
-    questions = list(db.get_questions(sec_id))
-    random.shuffle(questions)
+    questions = db.get_questions_ordered(sec_id)  # بالترتيب بدون خلط
     db.save_session(uid, "assessment", sec_id, questions, 0, 0, len(questions))
     await q.edit_message_text(
         f"{section['emoji'] or '📖'} *تقييم: {section['name']}*\n\n📝 {len(questions)} سؤال\n\nابدأ! 💪",
@@ -193,8 +192,7 @@ async def cb_reassess_section(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if not can:
         await q.answer(f"⏳ يمكنك إعادة التقييم بعد {days_left} يوم", show_alert=True); return
     section = db.get_section(sec_id)
-    questions = list(db.get_questions(sec_id))
-    random.shuffle(questions)
+    questions = db.get_questions_ordered(sec_id)  # بالترتيب بدون خلط
     db.save_session(uid, "assessment", sec_id, questions, 0, 0, len(questions))
     await q.edit_message_text(
         f"{section['emoji'] or '📖'} *إعادة تقييم: {section['name']}*\n\n📝 {len(questions)} سؤال\n\nابدأ! 💪",
@@ -215,8 +213,7 @@ async def cb_train_section(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     parts = q.data.split("_")
     sec_id = int(parts[1])
     limit = None if parts[2]=="all" else int(parts[2])
-    questions = list(db.get_questions(sec_id, limit))
-    random.shuffle(questions)
+    questions = db.get_questions_ordered(sec_id, limit)  # بالترتيب بدون خلط
     db.save_session(uid, "training", sec_id, questions, 0, 0, len(questions))
     section = db.get_section(sec_id)
     await q.edit_message_text(

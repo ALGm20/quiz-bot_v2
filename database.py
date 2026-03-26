@@ -112,6 +112,14 @@ class Database:
             rows = list(c.execute("SELECT * FROM questions WHERE section_id=? ORDER BY RANDOM()", (sec_id,)).fetchall())
         return rows[:limit] if limit else rows
 
+    def get_questions_ordered(self, sec_id: int, limit: Optional[int]=None):
+        """الأسئلة بالترتيب من 1 إلى آخر سؤال — بدون خلط"""
+        with self._connect() as c:
+            rows = list(c.execute(
+                "SELECT * FROM questions WHERE section_id=? ORDER BY id ASC", (sec_id,)
+            ).fetchall())
+        return rows[:limit] if limit else rows
+
     def import_questions(self, data: list):
         with self._connect() as c:
             cache = {}
